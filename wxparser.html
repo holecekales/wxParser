@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>WX Parser</title>
+  <script type="text/javascript" src=wxparser.js></script>
+</head>
+
+<body>
+  <div id="content">
+    
+  </div>
+
+
+  <script type="text/javascript">
+    (function(){
+      var packet = 'KE7JL>APRS,TCPXX*,qAX,CWOP-2:@302333z4741.67N/12212.97W_315/001g005t063r000p000P000h51b10254.DsVP';
+      var wxp = new wxParser(packet);
+      
+      // get the content div
+      var cd = document.querySelector('#content');
+      cd.innerHTML = packet + '<BR>';
+
+    })();
+ </script>
+
+</body>
+
+</html>
