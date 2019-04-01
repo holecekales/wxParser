@@ -58,6 +58,7 @@ class wxParser {
     let re = new RegExp(/^(\d{2})([0-9 ]{2}\.[0-9 ]{2})([NnSs])(?:[\/])(\d{3})([0-9 ]{2}\.[0-9 ]{2})([EeWw])(.*)$/);
     let match = re.exec(body);
     if(match) {
+      // extract the numbers
       let latDeg = parseInt(match[1]);
       let latMin = parseFloat(match[2]);
       let ns     = match[3];
@@ -69,9 +70,11 @@ class wxParser {
       this.wxInfo.latitude  = latDeg + latMin / 60.0;
       this.wxInfo.longitude = lonDeg + lonMin / 60.0;
 
+      // if we're down south we need to negate
       if(ns.toLowerCase() == 's')
         this.wxInfo.latitude *= -1;
       
+      // if we're out west we need to negate
       if(ew.toLowerCase() == 'w')
         this.wxInfo.longitude *= -1;
      

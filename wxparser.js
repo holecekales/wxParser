@@ -50,6 +50,7 @@ var wxParser = (function () {
         var re = new RegExp(/^(\d{2})([0-9 ]{2}\.[0-9 ]{2})([NnSs])(?:[\/])(\d{3})([0-9 ]{2}\.[0-9 ]{2})([EeWw])(.*)$/);
         var match = re.exec(body);
         if (match) {
+            // extract the numbers
             var latDeg = parseInt(match[1]);
             var latMin = parseFloat(match[2]);
             var ns = match[3];
@@ -59,8 +60,10 @@ var wxParser = (function () {
             // convert coordinates to decimal
             this.wxInfo.latitude = latDeg + latMin / 60.0;
             this.wxInfo.longitude = lonDeg + lonMin / 60.0;
+            // if we're down south we need to negate
             if (ns.toLowerCase() == 's')
                 this.wxInfo.latitude *= -1;
+            // if we're out west we need to negate
             if (ew.toLowerCase() == 'w')
                 this.wxInfo.longitude *= -1;
             // return the rest of the packet
