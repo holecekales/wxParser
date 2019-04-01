@@ -15,6 +15,7 @@ var wxParser = (function () {
         var msg = this.packet.split('@');
         var body = msg[1];
         body = this.getTimeStamp(body);
+        body = this.getLocation(body);
     };
     // -------------------------------------------------------
     // getTimeStamp - parses out the timestamp from the packet
@@ -40,6 +41,33 @@ var wxParser = (function () {
         }
         console.error("Unsupported time format!");
         return ""; // error and return empty
+    };
+    // -------------------------------------------------------
+    // getLocation - parses out the location of the station
+    // -------------------------------------------------------
+    wxParser.prototype.getLocation = function (body) {
+        // match (DD)([MM ])(.)(MM)(NS) and then the same thing for lon 
+        var re = new RegExp(/^(\d{2})([0-9 ]{2}\.[0-9 ]{2})([NnSs])(?:[\/])(\d{3})([0-9 ]{2}\.[0-9 ]{2})([EeWw])(.*)$/);
+        var match = re.exec(body);
+        if (match) {
+            var latDeg = parseInt(match[1]);
+            var latMin = parseFloat(match[2]);
+            var ns = match[3];
+            var lonDeg = parseInt(match[4]);
+            var lonMin = parseFloat(match[5]);
+            var ew = match[6];
+            // convert coordinates to decimal
+            this.wxInfo.latitude = latDeg + latMin / 60.0;
+            this.wxInfo.longitude = lonDeg + lonMin / 60.0;
+            if (ns.toLowerCase() == 's')
+                this.wxInfo.latitude *= -1;
+            if (ew.toLowerCase() == 'w')
+                this.wxInfo.longitude *= -1;
+            // return the rest of the packet
+            return match[7];
+        }
+        console.error("Unsupported location");
+        return "";
     };
     return wxParser;
 }());

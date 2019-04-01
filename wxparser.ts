@@ -19,6 +19,7 @@ class wxParser {
     let msg = this.packet.split('@');
     let body : string = msg[1];
     body = this.getTimeStamp(body);
+    body = this.getLocation(body);
   }
 
   // -------------------------------------------------------
@@ -47,5 +48,37 @@ class wxParser {
     }
     console.error("Unsupported time format!");
     return "";  // error and return empty
+  }
+
+  // -------------------------------------------------------
+  // getLocation - parses out the location of the station
+  // -------------------------------------------------------
+  getLocation(body : string) :string {
+    // match (DD)([MM ])(.)(MM)(NS) and then the same thing for lon 
+    let re = new RegExp(/^(\d{2})([0-9 ]{2}\.[0-9 ]{2})([NnSs])(?:[\/])(\d{3})([0-9 ]{2}\.[0-9 ]{2})([EeWw])(.*)$/);
+    let match = re.exec(body);
+    if(match) {
+      let latDeg = parseInt(match[1]);
+      let latMin = parseFloat(match[2]);
+      let ns     = match[3];
+      let lonDeg = parseInt(match[4]);
+      let lonMin = parseFloat(match[5]);
+      let ew     = match[6];
+
+      // convert coordinates to decimal
+      this.wxInfo.latitude  = latDeg + latMin / 60.0;
+      this.wxInfo.longitude = lonDeg + lonMin / 60.0;
+
+      if(ns.toLowerCase() == 's')
+        this.wxInfo.latitude *= -1;
+      
+      if(ew.toLowerCase() == 'w')
+        this.wxInfo.longitude *= -1;
+     
+      // return the rest of the packet
+      return match[7];
+    }
+    console.error("Unsupported location");
+    return "";
   }
 }
