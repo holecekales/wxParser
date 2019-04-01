@@ -25,9 +25,11 @@ class wxParser {
   // getTimeStamp - parses out the timestamp from the packet
   // -------------------------------------------------------
   getTimeStamp(body : string) :string {
-    // let re = new RegExp('^((\d{6})(.))$')
+    // regexp to create 5 groups
+    // (DD)(hh)(mm)(z)(the rest of the string)
     let re = new RegExp(/^(\d{2})(\d{2})(\d{2})(.)(.*$)/);
     let match = re.exec(body);
+    // if we found a match.
     if(match) {
       let now = new Date();
       if(match[4] == 'z') {
@@ -44,5 +46,6 @@ class wxParser {
       }      
     }
     console.error("Unsupported time format!");
+    return "";  // error and return empty
   }
 }
