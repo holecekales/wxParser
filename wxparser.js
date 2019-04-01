@@ -66,7 +66,7 @@ var wxParser = (function () {
             // return the rest of the packet
             return match[7];
         }
-        console.error("Unsupported location");
+        console.error("Unsupported location format!");
         return "";
     };
     return wxParser;

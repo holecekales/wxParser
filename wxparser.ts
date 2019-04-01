@@ -78,7 +78,7 @@ class wxParser {
       // return the rest of the packet
       return match[7];
     }
-    console.error("Unsupported location");
+    console.error("Unsupported location format!");
     return "";
   }
 }
