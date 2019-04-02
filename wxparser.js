@@ -16,6 +16,7 @@ var wxParser = (function () {
         var body = msg[1];
         body = this.getTimeStamp(body);
         body = this.getLocation(body);
+        body = this.getWeather(body);
     };
     // -------------------------------------------------------
     // getTimeStamp - parses out the timestamp from the packet
@@ -70,6 +71,72 @@ var wxParser = (function () {
             return match[7];
         }
         console.error("Unsupported location format!");
+        return "";
+    };
+    // -------------------------------------------------------
+    // weatherDecoder - decode ex info
+    // -------------------------------------------------------
+    wxParser.prototype.weatherDecoder = function (param) {
+        var mphTometerps = 0.44704;
+        var inchTomm = 0.254; // 1/100in to mm
+        console.log(param);
+        switch (param[0]) {
+            case "_":
+                this.wxInfo.windDir = parseInt(param.substring(1));
+                break;
+            case "/":
+                this.wxInfo.windSpeed = parseInt(param.substring(1)) * mphTometerps;
+                break;
+            case "t":
+                this.wxInfo.temp = (parseFloat(param.substring(1)) - 32) / 1.8;
+                break;
+            case "g":
+                this.wxInfo.windGust = parseInt(param.substring(1)) * mphTometerps;
+                break;
+            case "r":
+                this.wxInfo.rain1h = parseInt(param.substring(1)) * inchTomm;
+                break;
+            case "p":
+                this.wxInfo.rain24h = parseInt(param.substring(1)) * inchTomm;
+                break;
+            case "P":
+                this.wxInfo.rainMidnight = parseInt(param.substring(1)) * inchTomm;
+                break;
+            case "h":
+                this.wxInfo.humidity = parseInt(param.substring(1)) * mphTometerps;
+                break;
+            case "b":
+                this.wxInfo.pressure = parseFloat(param.substring(1)) / 10.0;
+                break;
+            case "l":
+                this.wxInfo.luminosity = parseInt(param.substring(1)) + 1000;
+                break;
+            case "L":
+                this.wxInfo.luminosity = parseInt(param.substring(1));
+                break;
+            case "s":
+                this.wxInfo.snow = parseFloat(param.substring(1)) * 25.4;
+                break;
+            case "#":
+                this.wxInfo.rainRaw = parseInt(param.substring(1));
+                break;
+        }
+    };
+    // -------------------------------------------------------
+    // getWeather - parse out the weather infromation
+    // -------------------------------------------------------
+    wxParser.prototype.getWeather = function (body) {
+        var _this = this;
+        var e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h\d{2}|b\d{5}|s\.\d{2}|s\d\.\d)/g;
+        var match = body.match(e);
+        if (match.length > 0) {
+            match.map(function (p) { _this.weatherDecoder(p); });
+        }
+        else {
+            console.error("Unsupported weather format!");
+        }
+        // this is a bug! since it does not return the rest 
+        // of the string for the equipment
         return "";
     };
     return wxParser;

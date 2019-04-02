@@ -20,6 +20,7 @@ class wxParser {
     let body : string = msg[1];
     body = this.getTimeStamp(body);
     body = this.getLocation(body);
+    body = this.getWeather(body);
   }
 
   // -------------------------------------------------------
@@ -82,6 +83,78 @@ class wxParser {
       return match[7];
     }
     console.error("Unsupported location format!");
+    return "";
+  }
+
+  // -------------------------------------------------------
+  // weatherDecoder - decode ex info
+  // -------------------------------------------------------
+  weatherDecoder(param : string)
+  {
+    const mphTometerps : number = 0.44704;
+    const inchTomm : number = 0.254 // 1/100in to mm
+
+    console.log(param);
+
+    switch(param[0]) {
+      case "_": // wind direction
+        this.wxInfo.windDir = parseInt(param.substring(1));
+      break;
+      case "/": // wind speed
+        this.wxInfo.windSpeed = parseInt(param.substring(1)) * mphTometerps;
+      break;
+      case "t": 
+        this.wxInfo.temp = (parseFloat(param.substring(1)) - 32) / 1.8;
+      break;
+      case "g": // wind gusts
+        this.wxInfo.windGust = parseInt(param.substring(1)) * mphTometerps;
+      break;
+      case "r": // rain 1 hour
+        this.wxInfo.rain1h = parseInt(param.substring(1)) * inchTomm;
+      break;
+      case "p": // rain last 24 hours
+        this.wxInfo.rain24h = parseInt(param.substring(1)) * inchTomm;
+      break;
+      case "P": // rain since midnight
+        this.wxInfo.rainMidnight = parseInt(param.substring(1)) * inchTomm;
+      break;
+      case "h": // humidity
+        this.wxInfo.humidity = parseInt(param.substring(1)) * mphTometerps;
+      break;
+      case "b": // pressure
+        this.wxInfo.pressure = parseFloat(param.substring(1)) / 10.0;
+      break;
+      case "l": // luminosity
+        this.wxInfo.luminosity = parseInt(param.substring(1)) + 1000;
+      break;
+      case "L": // luminosity
+        this.wxInfo.luminosity = parseInt(param.substring(1));
+      break;
+      case "s": // snow
+        this.wxInfo.snow = parseFloat(param.substring(1)) * 25.4;
+      break;
+      case "#": // rainRaw
+        this.wxInfo.rainRaw = parseInt(param.substring(1));
+      break;
+    }
+  }
+
+
+  // -------------------------------------------------------
+  // getWeather - parse out the weather infromation
+  // -------------------------------------------------------
+  getWeather(body : string) :string {
+    let e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h\d{2}|b\d{5}|s\.\d{2}|s\d\.\d)/g
+    let match = body.match(e);
+    if(match.length > 0)
+    {
+      match.map(p=>{this.weatherDecoder(p)});
+    }
+    else{
+      console.error("Unsupported weather format!");
+    }
+    // this is a bug! since it does not return the rest 
+    // of the string for the equipment
     return "";
   }
 }
