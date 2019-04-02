@@ -96,6 +96,11 @@ class wxParser {
 
     console.log(param);
 
+    // make sure that this is not param 
+    // with undefined value
+    if(/\.{2,}$/.test(param.substr(1)))
+      return;
+
     switch(param[0]) {
       case "_": // wind direction
         this.wxInfo.windDir = parseInt(param.substring(1));
@@ -144,11 +149,10 @@ class wxParser {
   // getWeather - parse out the weather infromation
   // -------------------------------------------------------
   getWeather(body : string) :string {
-    let e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h\d{2}|b\d{5}|s\.\d{2}|s\d\.\d)/g
+    let e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h(\d{2}|\.{2})|b(\d{5}|\.{5})|s(\.\d{2}|\d\.\d|\.{3}))/g
     let last = -1;
     let match : Array<string>;
-    while((match = e.exec(body)) != null)
-    {
+    while((match = e.exec(body)) != null) {
       this.weatherDecoder(match[0]);
       last = e.lastIndex;
     }
@@ -156,7 +160,6 @@ class wxParser {
     if(last == -1) {
       console.error("Unsuported weather format!");
     }
-
     return body.substr(last);
   }
 }

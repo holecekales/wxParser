@@ -80,6 +80,10 @@ var wxParser = (function () {
         var mphTometerps = 0.44704;
         var inchTomm = 0.254; // 1/100in to mm
         console.log(param);
+        // make sure that this is not param 
+        // with undefined value
+        if (/\.{2,}$/.test(param.substr(1)))
+            return;
         switch (param[0]) {
             case "_":
                 this.wxInfo.windDir = parseInt(param.substring(1));
@@ -126,7 +130,7 @@ var wxParser = (function () {
     // getWeather - parse out the weather infromation
     // -------------------------------------------------------
     wxParser.prototype.getWeather = function (body) {
-        var e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h\d{2}|b\d{5}|s\.\d{2}|s\d\.\d)/g;
+        var e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h(\d{2}|\.{2})|b(\d{5}|\.{5})|s(\.\d{2}|\d\.\d|\.{3}))/g;
         var last = -1;
         var match;
         while ((match = e.exec(body)) != null) {
