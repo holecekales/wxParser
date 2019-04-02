@@ -126,18 +126,17 @@ var wxParser = (function () {
     // getWeather - parse out the weather infromation
     // -------------------------------------------------------
     wxParser.prototype.getWeather = function (body) {
-        var _this = this;
         var e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h\d{2}|b\d{5}|s\.\d{2}|s\d\.\d)/g;
-        var match = body.match(e);
-        if (match.length > 0) {
-            match.map(function (p) { _this.weatherDecoder(p); });
+        var last = -1;
+        var match;
+        while ((match = e.exec(body)) != null) {
+            this.weatherDecoder(match[0]);
+            last = e.lastIndex;
         }
-        else {
-            console.error("Unsupported weather format!");
+        if (last == -1) {
+            console.error("Unsuported weather format!");
         }
-        // this is a bug! since it does not return the rest 
-        // of the string for the equipment
-        return "";
+        return body.substr(last);
     };
     return wxParser;
 }());

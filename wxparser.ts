@@ -145,16 +145,18 @@ class wxParser {
   // -------------------------------------------------------
   getWeather(body : string) :string {
     let e = /([_\/cSgtrpPlLs#](\d{3}|\.{3})|t-\d{2}|h\d{2}|b\d{5}|s\.\d{2}|s\d\.\d)/g
-    let match = body.match(e);
-    if(match.length > 0)
+    let last = -1;
+    let match : Array<string>;
+    while((match = e.exec(body)) != null)
     {
-      match.map(p=>{this.weatherDecoder(p)});
+      this.weatherDecoder(match[0]);
+      last = e.lastIndex;
     }
-    else{
-      console.error("Unsupported weather format!");
+
+    if(last == -1) {
+      console.error("Unsuported weather format!");
     }
-    // this is a bug! since it does not return the rest 
-    // of the string for the equipment
-    return "";
+
+    return body.substr(last);
   }
 }
