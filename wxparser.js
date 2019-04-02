@@ -124,6 +124,9 @@ var wxParser = (function () {
             case "#":
                 this.wxInfo.rainRaw = parseInt(param.substring(1));
                 break;
+            default:
+                console.error("Unsupported wx information!");
+                break;
         }
     };
     // -------------------------------------------------------
