@@ -37,7 +37,7 @@ For monitoring the weather around my house, I am using [APRS (Automatic Position
 |[EW8003](http://www.findu.com/cgi-bin/wxpage.cgi?call=EW8003)	|6.1| [start=1&length=1](http://www.findu.com/cgi-bin/rawwx.cgi?call=EW8003&start=1&length=1)|
 |[CW6259](http://www.findu.com/cgi-bin/wxpage.cgi?call=CW6259)	|6.1| [start=1&length=1](http://www.findu.com/cgi-bin/rawwx.cgi?call=CW6259&start=1&length=1)|
 
-<img src="public/images/wxStationMap.png" width="300px">
+<img src="images/wxStationMap.png" width="300px">
 
 [Live map of interesting stations around our house](https://www.aprsdirect.com/center/47.63437,-122.14585/zoom/12/time/60)
 
